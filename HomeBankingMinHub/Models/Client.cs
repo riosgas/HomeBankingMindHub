@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HomeBankingMinHub.Models
+namespace HomeBankingMindHub.Models
 {
     public class Client
     {
