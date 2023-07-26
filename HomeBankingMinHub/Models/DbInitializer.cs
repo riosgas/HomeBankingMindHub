@@ -1,4 +1,4 @@
-﻿using HomeBankingMindHub.Models;
+using HomeBankingMindHub.Models;
 using System;
 using System.Linq;
 
