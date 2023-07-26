@@ -33,6 +33,7 @@ namespace HomeBankingMindHub
             //    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
             //Add ClientRepository
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
