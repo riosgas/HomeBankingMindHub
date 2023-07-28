@@ -13,45 +13,47 @@ namespace HomeBankingMindHub.Models
             {
                 var clients = new Client[]
                 {
-                    new Client { FirstName="Victor", LastName="Coronado", Email = "vcoronado@gmail.com", Password="123456"},
+                    new Client { FirstName="Gaston", LastName="Alvaro", Email = "ga@gmail.com", Password="123456"},
                     new Client { FirstName="Juan", LastName="Carlos", Email = "jc@gmail.com", Password="123456"}
                 };
                 foreach (Client client in clients)
                 {
                     context.Clients.Add(client);
                 }
+                context.SaveChanges();
             }
             #endregion
 
             #region Accounts data
             if (!context.Accounts.Any())
             {
-                var clientVictor = context.Clients.FirstOrDefault(c => c.Email == "vcoronado@gmail.com");
-                if (clientVictor != null)
+                var client1 = context.Clients.FirstOrDefault(c => c.Email == "ga@gmail.com");
+                if (client1 != null)
                 {
                     var accounts = new Account[]
                     {
-                        new Account {ClientId = clientVictor.Id, CreationDate = DateTime.Now, Number = "VIN001", Balance = 100 },
-                        new Account {ClientId = clientVictor.Id, CreationDate = DateTime.Now, Number = "VIN002", Balance = 0 },
+                        new Account {ClientId = client1.Id, CreationDate = DateTime.Now, Number = "VIN001", Balance = 100 },
+                        new Account {ClientId = client1.Id, CreationDate = DateTime.Now, Number = "VIN002", Balance = 0 },
                     };
                     foreach (Account account in accounts)
                     {
                         context.Accounts.Add(account);
                     }
                 }
-                var clientJuan = context.Clients.FirstOrDefault(c => c.Email == "jc@gmail.com");
-                if (clientJuan != null)
+                var client2 = context.Clients.FirstOrDefault(c => c.Email == "jc@gmail.com");
+                if (client2 != null)
                 {
                     var accounts = new Account[]
                     {
-                        new Account {ClientId = clientJuan.Id, CreationDate = DateTime.Now, Number = "VIN003", Balance = 100 },
-                        new Account {ClientId = clientJuan.Id, CreationDate = DateTime.Now, Number = "VIN004", Balance = 0 },
+                        new Account {ClientId = client2.Id, CreationDate = DateTime.Now, Number = "VIN003", Balance = 100 },
+                        new Account {ClientId = client2.Id, CreationDate = DateTime.Now, Number = "VIN004", Balance = 0 },
                     };
                     foreach (Account account in accounts)
                     {
                         context.Accounts.Add(account);
                     }
                 }
+                context.SaveChanges();
             }
             #endregion
 
@@ -85,6 +87,7 @@ namespace HomeBankingMindHub.Models
                         context.Transactions.Add(transaction);
                     }
                 }
+                context.SaveChanges();
             }
             #endregion
 
@@ -111,7 +114,7 @@ namespace HomeBankingMindHub.Models
                 var loanAuto = context.Loans.FirstOrDefault(l => l.Name == "Automotriz");
 
                 //add clientloans
-                var client1 = context.Clients.FirstOrDefault(c => c.Email == "vcoronado@gmail.com");
+                var client1 = context.Clients.FirstOrDefault(c => c.Email == "ga@gmail.com");
                 if (client1 != null)
                 {
                     var clientLoans = new ClientLoan[]
@@ -139,10 +142,10 @@ namespace HomeBankingMindHub.Models
                         context.ClientLoans.Add(clientLoan);
                     }
                 }
+                context.SaveChanges();
             }
             #endregion
 
-            context.SaveChanges();
         }
     }
 }
