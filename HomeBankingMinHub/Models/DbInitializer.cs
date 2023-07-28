@@ -16,13 +16,10 @@ namespace HomeBankingMindHub.Models
                     new Client { FirstName="Victor", LastName="Coronado", Email = "vcoronado@gmail.com", Password="123456"},
                     new Client { FirstName="Juan", LastName="Carlos", Email = "jc@gmail.com", Password="123456"}
                 };
-
                 foreach (Client client in clients)
                 {
                     context.Clients.Add(client);
                 }
-                //Client client1 = new Client { FirstName = "Victor", LastName = "Coronado", Email = "vcoronado@gmail.com", Password = "123456" };
-                //context.Clients.Add(client1);
             }
             #endregion
 
@@ -86,6 +83,60 @@ namespace HomeBankingMindHub.Models
                     foreach (Transaction transaction in transactions)
                     {
                         context.Transactions.Add(transaction);
+                    }
+                }
+            }
+            #endregion
+
+            #region Loans data
+            if (!context.ClientLoans.Any())
+            {
+                //add loans types
+                if (!context.Loans.Any())
+                {
+                    var loans = new Loan[]
+                    {
+                        new Loan { Name = "Hipotecario", MaxAmount = 500000, Payments = "12,24,36,48,60" },
+                        new Loan { Name = "Personal", MaxAmount = 100000, Payments = "6,12,24" },
+                        new Loan { Name = "Automotriz", MaxAmount = 300000, Payments = "6,12,24,36" },
+                    };
+                    foreach (Loan loan in loans)
+                    {
+                        context.Loans.Add(loan);
+                    };
+                    context.SaveChanges();
+                }
+                var loanHipoteca = context.Loans.FirstOrDefault(l => l.Name == "Hipotecario");
+                var loanPersonal = context.Loans.FirstOrDefault(l => l.Name == "Personal");
+                var loanAuto = context.Loans.FirstOrDefault(l => l.Name == "Automotriz");
+
+                //add clientloans
+                var client1 = context.Clients.FirstOrDefault(c => c.Email == "vcoronado@gmail.com");
+                if (client1 != null)
+                {
+                    var clientLoans = new ClientLoan[]
+                    {
+                        new ClientLoan { Amount = 400000, ClientId = client1.Id, LoanId = loanHipoteca.Id, Payments = "60" },
+                        new ClientLoan { Amount = 100000, ClientId = client1.Id, LoanId = loanPersonal.Id, Payments = "24" },
+                        new ClientLoan { Amount = 300000, ClientId = client1.Id, LoanId = loanAuto.Id, Payments = "36" },
+                    };
+                    foreach (ClientLoan clientLoan in clientLoans)
+                    {
+                        context.ClientLoans.Add(clientLoan);
+                    }
+                }
+
+                var client2 = context.Clients.FirstOrDefault(c => c.Email == "jc@gmail.com");
+                if (client2 != null && client2?.ClientLoans == null)
+                {
+                    var clientLoans = new ClientLoan[]
+                    {
+                        new ClientLoan { Amount = 100000, ClientId = client2.Id, LoanId = loanPersonal.Id, Payments = "24" },
+                        new ClientLoan { Amount = 300000, ClientId = client2.Id, LoanId = loanAuto.Id, Payments = "36" },
+                    };
+                    foreach (ClientLoan clientLoan in clientLoans)
+                    {
+                        context.ClientLoans.Add(clientLoan);
                     }
                 }
             }
