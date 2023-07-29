@@ -32,7 +32,7 @@ namespace HomeBankingMindHub
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
                 options.LoginPath = new PathString("/index.html");
             });
             //autorización
