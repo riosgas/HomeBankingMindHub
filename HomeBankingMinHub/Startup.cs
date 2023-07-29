@@ -1,7 +1,9 @@
 using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +28,19 @@ namespace HomeBankingMindHub
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //autenticación
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.LoginPath = new PathString("/index.html");
+            });
+            //autorización
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientOnly", policy => policy.RequireClaim("Client"));
+            });
+
             services.AddRazorPages();
             //Add context
             services.AddDbContext<HomeBankingContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("HomeBankingConnection")));
@@ -51,6 +66,9 @@ namespace HomeBankingMindHub
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            //le decimos que use autenticación
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
