@@ -14,9 +14,11 @@ namespace HomeBankingMindHub.Controllers
     public class ClientsController : ControllerBase
     {
         private IClientRepository _clientRepository;
-        public ClientsController(IClientRepository clientRepository)
+        private IAccountRepository _accountRepository;
+        public ClientsController(IClientRepository clientRepository, IAccountRepository accountRepository)
         {
             _clientRepository = clientRepository;
+            _accountRepository = accountRepository;
         }
         [HttpGet]
         public IActionResult Get()
@@ -122,6 +124,52 @@ namespace HomeBankingMindHub.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult Post([FromBody] Client client)
+        {
+            try
+            {
+                //validamos datos antes
+                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
+                    return StatusCode(403, "datos inválidos");
+
+                //buscamos si ya existe el usuario
+                if (_clientRepository.FindByEmail(client.Email) != null)
+                {
+                    return StatusCode(403, "Email está en uso");
+                }
+                Client newClient = new Client
+                {
+                    Email = client.Email,
+                    Password = client.Password,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                };
+                _clientRepository.Save(newClient);
+
+                Client createdClient = _clientRepository.FindByEmail(client.Email);
+                ///pending check existing account numbers
+                ///
+                Random random = new Random();
+                string randomAccountNumber = $"VIN-{random.Next(100000, 1000000).ToString()}";
+                Account newAccount = new Account
+                {
+                    Number = randomAccountNumber,
+                    CreationDate = DateTime.Now,
+                    Balance = 0,
+                    ClientId = createdClient.Id,
+                };
+                _accountRepository.Save(newAccount);
+
+                createdClient = _clientRepository.FindByEmail(client.Email);
+                return Created("", createdClient);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet("current")]
         public IActionResult GetCurrent()
         {
@@ -181,40 +229,7 @@ namespace HomeBankingMindHub.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-        [HttpPost]
-        public IActionResult Post([FromBody] Client client)
-        {
-            try
-            {
-                //validamos datos antes
-                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
-                    return StatusCode(403, "datos inválidos");
-
-                //buscamos si ya existe el usuario
-                Client user = _clientRepository.FindByEmail(client.Email);
-                if (user != null)
-                {
-                    return StatusCode(403, "Email está en uso");
-                }
-
-                Client newClient = new Client
-                {
-                    Email = client.Email,
-                    Password = client.Password,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                };
-
-                _clientRepository.Save(newClient);
-                return Created("", newClient);
-
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+        
 
     }
 }

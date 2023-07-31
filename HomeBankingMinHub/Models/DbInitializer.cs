@@ -32,8 +32,8 @@ namespace HomeBankingMindHub.Models
                 {
                     var accounts = new Account[]
                     {
-                        new Account {ClientId = client1.Id, CreationDate = DateTime.Now, Number = "VIN001", Balance = 100 },
-                        new Account {ClientId = client1.Id, CreationDate = DateTime.Now, Number = "VIN002", Balance = 0 },
+                        new Account {ClientId = client1.Id, CreationDate = DateTime.Now, Number = "VIN-000001", Balance = 100 },
+                        new Account {ClientId = client1.Id, CreationDate = DateTime.Now, Number = "VIN-000002", Balance = 0 },
                     };
                     foreach (Account account in accounts)
                     {
@@ -45,8 +45,8 @@ namespace HomeBankingMindHub.Models
                 {
                     var accounts = new Account[]
                     {
-                        new Account {ClientId = client2.Id, CreationDate = DateTime.Now, Number = "VIN003", Balance = 100 },
-                        new Account {ClientId = client2.Id, CreationDate = DateTime.Now, Number = "VIN004", Balance = 0 },
+                        new Account {ClientId = client2.Id, CreationDate = DateTime.Now, Number = "VIN-000003", Balance = 100 },
+                        new Account {ClientId = client2.Id, CreationDate = DateTime.Now, Number = "VIN-000004", Balance = 0 },
                     };
                     foreach (Account account in accounts)
                     {
@@ -60,7 +60,7 @@ namespace HomeBankingMindHub.Models
             #region Transactions data
             if (!context.Transactions.Any())
             {
-                var account1 = context.Accounts.FirstOrDefault(c => c.Number == "VIN001");
+                var account1 = context.Accounts.FirstOrDefault(c => c.Number == "VIN-000001");
                 if (account1 != null)
                 {
                     var transactions = new Transaction[]
@@ -74,7 +74,7 @@ namespace HomeBankingMindHub.Models
                         context.Transactions.Add(transaction);
                     }
                 }
-                var account3 = context.Accounts.FirstOrDefault(c => c.Number == "VIN003");
+                var account3 = context.Accounts.FirstOrDefault(c => c.Number == "VIN-000003");
                 if (account3 != null)
                 {
                     var transactions = new Transaction[]
