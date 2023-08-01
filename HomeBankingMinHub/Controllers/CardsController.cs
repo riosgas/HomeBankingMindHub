@@ -22,8 +22,13 @@ namespace HomeBankingMindHub.Controllers
         }
         public class CardData
         {
-            public string type { get; set; }
-            public string color { get; set; }
+            public string Type { get; set; }
+            public string Color { get; set; }
+            public CardData(string type, string color)
+            {
+                Type = type;
+                Color = color;
+            }
         }
 
         [HttpPost("clients/current/cards")]
@@ -42,10 +47,21 @@ namespace HomeBankingMindHub.Controllers
                     return Forbid();
                 }
 
-                int numberOfCards = currentClient.Cards.Where(c => c.Type == card.type).Count();
+                CardType cardType;
+                if (!Enum.TryParse(card.Type, out cardType))
+                {
+                    return StatusCode(403, $"El tipo de tarjeta {card.Type} no es válido");
+                }
+                CardColor cardColor;
+                if (!Enum.TryParse(card.Color, out cardColor))
+                {
+                    return StatusCode(403, $"El color de tarjeta {card.Color} no es válido");
+                }
+
+                int numberOfCards = currentClient.Cards.Where(c => c.Type == card.Type).Count();
                 if (numberOfCards >= 3)
                 {
-                    return StatusCode(403, $"El cliente tiene 3 tarjetas de tipo {card.type}, no es posible crear otra");
+                    return StatusCode(403, $"El cliente tiene 3 tarjetas de tipo {card.Type}, no es posible crear otra");
                 }
 
                 static string RandomNumber(int digits)
@@ -67,8 +83,8 @@ namespace HomeBankingMindHub.Controllers
                 {
                     ClientId = currentClient.Id,
                     CardHolder = $"{currentClient.FirstName} { currentClient.LastName}",
-                    Type = card.type,
-                    Color = card.color,
+                    Type = cardType.ToString(),
+                    Color = cardColor.ToString(),
                     Number = $"{RandomNumber(4)}-{RandomNumber(4)}-{RandomNumber(4)}-{RandomNumber(4)}",
                     Cvv = int.Parse(RandomNumber(3)),
                     FromDate = DateTime.Now,
