@@ -51,6 +51,8 @@ namespace HomeBankingMindHub
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<ICardRepository, CardRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ILoanRepository, LoanRepository>();
+            services.AddScoped<IClientLoanRepository, ClientLoanRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
