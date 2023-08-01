@@ -10,6 +10,7 @@ var app = new Vue({
         getData: function(){
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
+            console.log(`El id de params es ${id}`);
             axios.get(`/api/accounts/${id}`)
             .then(function (response) {
                 //get client ifo
