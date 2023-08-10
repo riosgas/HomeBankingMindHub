@@ -1,16 +1,7 @@
-﻿using HomeBankingMindHub.Repositories;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using System;
-using HomeBankingMindHub.Models;
 using HomeBankingMindHub.dtos;
-using System.Linq;
+using HomeBankingMindHub.Services;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -18,52 +9,27 @@ namespace HomeBankingMindHub.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private IClientRepository _clientRepository;
-        public AuthController(IClientRepository clientRepository)
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService)
         {
-            _clientRepository = clientRepository;
+            _authService = authService;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Client client)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
         {
-            try
-            {
-                Client user = _clientRepository.FindByEmail(client.Email);
-                if (user == null || !String.Equals(user.Password, client.Password))
-                    return Unauthorized();
-
-                var claims = new List<Claim>
-                {
-                    new Claim("Client", user.Email),
-                };
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity)
-                );
+            bool isAuthenticated = await _authService.Login(loginRequest.Email, loginRequest.Password);
+            if (isAuthenticated)
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            else
+                return Unauthorized();
         }
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            try
-            {
-                await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            await _authService.Logout();
+            return Ok();
         }
 
     }

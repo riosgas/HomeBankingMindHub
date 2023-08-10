@@ -8,6 +8,7 @@ namespace HomeBankingMindHub.Repositories
         //IEnumerable<Account> GetAllCards(long id);
         void Save(Card card);
         Card FindById(long id);
+        Card FindByNumber(string number);
         IEnumerable<Card> GetCardsByClient(long clientId);
     }
 }
