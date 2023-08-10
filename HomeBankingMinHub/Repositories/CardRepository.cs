@@ -21,6 +21,10 @@ namespace HomeBankingMindHub.Repositories
         {
             return FindByCondition(card => card.Id == id).FirstOrDefault();
         }
+        public Card FindByNumber(string number)
+        {
+            return FindByCondition(card => card.Number == number).FirstOrDefault();
+        }
         public IEnumerable<Card> GetCardsByClient(long clientId)
         {
             return FindByCondition(card => card.ClientId == clientId).ToList();

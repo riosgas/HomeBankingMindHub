@@ -1,5 +1,7 @@
+using HomeBankingMindHub.Controllers;
 using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Repositories;
+using HomeBankingMindHub.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,19 +42,48 @@ namespace HomeBankingMindHub
             {
                 options.AddPolicy("ClientOnly", policy => policy.RequireClaim("Client"));
             });
-
+            //cors
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    policy =>
+                    {
+                        policy
+                            .WithOrigins("http://localhost:4200, localhost:4200")
+                            .AllowAnyMethod()
+                            .AllowCredentials()
+                            .SetIsOriginAllowed((host) => true)
+                            .AllowAnyHeader();
+                    });
+            });
             services.AddRazorPages();
             //Add context
             services.AddDbContext<HomeBankingContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("HomeBankingConnection")));
+            //Add controllers
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(GlobalExceptionFilter));
+            });
             services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
-            //Add ClientRepository
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
+            );
+            //Add repositories
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<ICardRepository, CardRepository>();
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<ILoanRepository, LoanRepository>();
             services.AddScoped<IClientLoanRepository, ClientLoanRepository>();
+
+            //Add services
+            services.AddHttpContextAccessor();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ICardService, CardService>();
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ILoanService, LoanService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,10 +102,14 @@ namespace HomeBankingMindHub
 
             app.UseRouting();
 
+            //app.UseMiddleware<GlobalExceptionMiddleware>();
+
             //le decimos que use autenticación
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
